@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Avadafy · Creative Automation Studio</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- EmailJS (only needed if you pick EmailJS for the contact form) -->
+  <!-- Replace YOUR_PUBLIC_KEY below when you set up EmailJS -->
+  <script
+    defer
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+  ></script>
+
+  <script defer src="app.js"></script>
+</head>
+<body class="theme-dark">
+  <!-- Floating background orbs -->
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <header class="site-header">
+    <div class="brand">
+      <div class="brand-mark">A</div>
+      <div class="brand-text">
+        <span class="brand-name">Avadafy</span>
+        <span class="brand-tagline">Creative Automation Studio</span>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#home" data-link>Home</a>
+      <a href="#features" data-link>Features</a>
+      <a href="#studio" data-link>Studio</a>
+      <a href="#pricing" data-link>Pricing</a>
+      <a href="#contact" data-link>Contact</a>
+    </nav>
+
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+      <span class="toggle-icon moon">☾</span>
+      <span class="toggle-icon sun">☀</span>
+    </button>
+  </header>
+
+  <main class="site-main">
+    <!-- HOME / HERO -->
+    <section id="home" class="route route-active" data-route="home">
+      <div class="hero">
+        <div class="hero-content" data-animate="fade-up">
+          <div class="pill">New · Studio-ready templates and automations</div>
+          <h1>
+            Design once.<br />
+            <span class="accent">Avadafy</span> everywhere.
+          </h1>
+          <p class="hero-subtitle">
+            Avadafy turns your ideas into immersive web experiences.  
+            Generate layouts, animate interactions, and publish — all from a single creative hub.
+          </p>
+
+          <div class="hero-actions">
+            <button id="ctaStart" class="btn btn-primary">
+              Start exploring
+            </button>
+            <button id="ctaTour" class="btn btn-ghost">
+              Watch live tour
+            </button>
+          </div>
+
+          <div class="hero-meta">
+            <span>🚀 Built for makers, students & indie devs</span>
+            <span>⚡ No code needed — but code friendly</span>
+          </div>
+        </div>
+
+        <div class="hero-panel" data-animate="fade-left">
+          <div class="hero-dashboard">
+            <div class="dashboard-header">
+              <span class="dot red"></span>
+              <span class="dot yellow"></span>
+              <span class="dot green"></span>
+              <span class="dashboard-title">Live Avadafy preview</span>
+            </div>
+            <div class="dashboard-body">
+              <div class="mini-nav">
+                <button class="chip chip-active">Landing</button>
+                <button class="chip">Dashboard</button>
+                <button class="chip">Portfolio</button>
+              </div>
+              <div class="mini-view">
+                <div class="mini-card accent-glow">
+                  <h3>Dynamic sections</h3>
+                  <p>Switch routes with smooth transitions and URL updates.</p>
+                </div>
+                <div class="mini-card">
+                  <h3>Theme-aware</h3>
+                  <p>Dark & light presets saved to your device.</p>
+                </div>
+              </div>
+              <div class="metrics-row">
+                <div class="metric" data-counter="128">
+                  <span class="metric-value">0</span>
+                  <span class="metric-label">Layouts generated</span>
+                </div>
+                <div class="metric" data-counter="4.9">
+                  <span class="metric-value">0</span>
+                  <span class="metric-label">Average rating</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="hero-footnote">
+            You’re actually viewing the Avadafy website — a live example of what you can build.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="route" data-route="features">
+      <header class="section-header" data-animate="fade-up">
+        <h2>Why Avadafy?</h2>
+        <p>
+          A creative toolkit that fuses smooth navigation, interaction design, and modern theming — coded
+          like a pro, but friendly enough to remix.
+        </p>
+      </header>
+
+      <div class="feature-grid">
+        <article class="feature-card" data-animate="fade-up">
+          <div class="feature-icon">🧠</div>
+          <h3>Route-aware experiences</h3>
+          <p>
+            Real route handling with URL hashes, so each section has its own address.
+            Perfect for sharing, bookmarking, and deep-linking.
+          </p>
+          <ul>
+            <li>Hash-based router</li>
+            <li>Section-level state</li>
+            <li>Accessible navigation</li>
+          </ul>
+        </article>
+
+        <article class="feature-card" data-animate="fade-up" data-animate-delay="0.1">
+          <div class="feature-icon">🎨</div>
+          <h3>Adaptive theming</h3>
+          <p>
+            Dark & light modes powered by CSS variables and local storage.
+            Your visitors always return to their preferred vibe.
+          </p>
+          <ul>
+            <li>One toggle, two palettes</li>
+            <li>Respects user preference</li>
+            <li>Persists across visits</li>
+          </ul>
+        </article>
+
+        <article class="feature-card" data-animate="fade-up" data-animate-delay="0.2">
+          <div class="feature-icon">✉️</div>
+          <h3>Instant contact</h3>
+          <p>
+            Wire your form into EmailJS, Formsubmit, or Netlify Forms — no custom backend needed.
+          </p>
+          <ul>
+            <li>Client-side validation</li>
+            <li>Provider-agnostic setup</li>
+            <li>Status UI for submissions</li>
+          </ul>
+        </article>
+
+        <article class="feature-card" data-animate="fade-up" data-animate-delay="0.3">
+          <div class="feature-icon">🧩</div>
+          <h3>Component playground</h3>
+          <p>
+            Reusable sections, cards, and layouts built in clean HTML, CSS, and JavaScript.
+          </p>
+          <ul>
+            <li>Responsive grid system</li>
+            <li>Animation utilities</li>
+            <li>Easy to expand</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- STUDIO -->
+    <section id="studio" class="route" data-route="studio">
+      <header class="section-header" data-animate="fade-up">
+        <h2>The Avadafy Studio</h2>
+        <p>
+          Think of this as your creative command center — where ideas, layouts,
+          animation presets, and color systems come together.
+        </p>
+      </header>
+
+      <div class="studio-layout">
+        <div class="studio-panel" data-animate="fade-right">
+          <h3>Live canvas</h3>
+          <p>
+            Use the studio to experiment with interactions, preview routes,
+            and swap themes in real time — just like you’re doing on this site.
+          </p>
+          <div class="studio-tag-grid">
+            <span class="tag">Micro-interactions</span>
+            <span class="tag">Hash routing</span>
+            <span class="tag">Theming</span>
+            <span class="tag">Glassmorphism</span>
+            <span class="tag">Responsive grid</span>
+            <span class="tag">JS animations</span>
+          </div>
+        </div>
+
+        <div class="studio-panel" data-animate="fade-left">
+          <h3>Interactive presets</h3>
+          <div class="preset-rows">
+            <div class="preset-card">
+              <div class="preset-label">Navigation flow</div>
+              <div class="preset-pill">Smooth fade</div>
+              <div class="preset-pill">Slide in</div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-label">Layout mode</div>
+              <div class="preset-pill preset-pill-active">Showcase</div>
+              <div class="preset-pill">Dashboard</div>
+            </div>
+            <div class="preset-card">
+              <div class="preset-label">Theme</div>
+              <div class="preset-pill">System</div>
+              <div class="preset-pill preset-pill-active">Dark</div>
+              <div class="preset-pill">Light</div>
+            </div>
+          </div>
+          <p class="studio-note">
+            This control surface is just UI — but it’s built exactly the way
+            you’d wire a real settings panel in JavaScript.
+          </p>
+        </div>
+      </div>
+
+      <div class="testimonial-carousel" data-animate="fade-up">
+        <h3>Voices from the beta loop</h3>
+        <div class="testimonial-track">
+          <article class="testimonial active">
+            <p>
+              “Avadafy feels like a design playground and a serious dev tool at the same time.”
+            </p>
+            <span class="author">– Mira, student developer</span>
+          </article>
+          <article class="testimonial">
+            <p>
+              “The routing + theme system is honestly cleaner than some production apps I’ve seen.”
+            </p>
+            <span class="author">– Leon, front-end dev</span>
+          </article>
+          <article class="testimonial">
+            <p>
+              “I copied this site, tweaked the content, and had a portfolio up in an evening.”
+            </p>
+            <span class="author">– Aiden, indie maker</span>
+          </article>
+        </div>
+        <div class="testimonial-dots">
+          <button class="dot active" data-slide="0"></button>
+          <button class="dot" data-slide="1"></button>
+          <button class="dot" data-slide="2"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="route" data-route="pricing">
+      <header class="section-header" data-animate="fade-up">
+        <h2>Pricing that grows with you</h2>
+        <p>
+          Start with the playground, then scale to serious projects once you’re ready.
+          The layout below is just demo UI — you control the actual numbers.
+        </p>
+      </header>
+
+      <div class="billing-toggle" data-animate="fade-up">
+        <span class="billing-label billing-label-active" data-billing-label="monthly">
+          Monthly
+        </span>
+        <button id="billingSwitch" class="billing-switch" aria-label="Toggle billing">
+          <span class="switch-thumb"></span>
+        </button>
+        <span class="billing-label" data-billing-label="yearly">
+          Yearly <span class="badge">save 20%</span>
+        </span>
+      </div>
+
+      <div class="pricing-grid">
+        <article class="pricing-card" data-plan="starter" data-animate="fade-up">
+          <h3>Starter</h3>
+          <p class="pricing-tagline">Launch your first idea.</p>
+          <div class="pricing-price">
+            <span class="pricing-amount" data-monthly="0" data-yearly="0">0</span>
+            <span class="pricing-period">/mo</span>
+          </div>
+          <ul class="pricing-list">
+            <li>All sections & components</li>
+            <li>Dark + light mode</li>
+            <li>Basic routing</li>
+            <li>Email contact via Formsubmit</li>
+          </ul>
+          <button class="btn btn-outline">Use this layout</button>
+        </article>
+
+        <article class="pricing-card featured" data-plan="creator" data-animate="fade-up" data-animate-delay="0.1">
+          <div class="pricing-badge">Most popular</div>
+          <h3>Creator</h3>
+          <p class="pricing-tagline">Ship polished experiences.</p>
+          <div class="pricing-price">
+            <span class="pricing-amount" data-monthly="19" data-yearly="15">19</span>
+            <span class="pricing-period">/mo</span>
+          </div>
+          <ul class="pricing-list">
+            <li>Advanced animation presets</li>
+            <li>Custom routing rules</li>
+            <li>EmailJS & Netlify form setups</li>
+            <li>Priority layout updates</li>
+          </ul>
+          <button class="btn btn-primary">I’m in</button>
+        </article>
+
+        <article class="pricing-card" data-plan="studio" data-animate="fade-up" data-animate-delay="0.2">
+          <h3>Studio</h3>
+          <p class="pricing-tagline">For studios & teams.</p>
+          <div class="pricing-price">
+            <span class="pricing-amount" data-monthly="39" data-yearly="29">39</span>
+            <span class="pricing-period">/mo</span>
+          </div>
+          <ul class="pricing-list">
+            <li>Component library export</li>
+            <li>Team workspaces</li>
+            <li>Design system presets</li>
+            <li>Direct support channel</li>
+          </ul>
+          <button class="btn btn-outline">Talk to us</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="route" data-route="contact">
+      <header class="section-header" data-animate="fade-up">
+        <h2>Let Avadafy power your next idea</h2>
+        <p>
+          Drop a message — this contact form is wired so you can hook it into
+          EmailJS, Formsubmit, or Netlify Forms without writing backend code.
+        </p>
+      </header>
+
+      <div class="contact-layout">
+        <div class="contact-info" data-animate="fade-right">
+          <h3>Tell us what you’re building</h3>
+          <p>
+            Are you prototyping a game hub, portfolio, or full studio site?
+            Share the details and we’ll help you translate it into a layout strategy.
+          </p>
+
+          <ul class="contact-highlights">
+            <li>📬 Client-side validation & statuses</li>
+            <li>🧩 Easily switch providers</li>
+            <li>🔐 No custom backend needed</li>
+          </ul>
+
+          <div class="contact-provider-hint">
+            <strong>How the form works:</strong>
+            <ol>
+              <li>Pick a provider in <code>app.js</code> (EmailJS, Formsubmit, or Netlify).</li>
+              <li>Follow the inline comments to add your keys or email.</li>
+              <li>Deploy — and replies will go straight to you.</li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="contact-form-wrapper" data-animate="fade-left">
+          <!-- CONTACT FORM -->
+          <!-- NOTE: by default, we use Formsubmit.co. Replace YOUR_EMAIL_HERE below. -->
+          <form
+            id="contactForm"
+            class="contact-form"
+            method="POST"
+            action="https://formsubmit.co/jaw071503@gmail.com"
+          >
+            <!-- Formsubmit-specific hidden fields (you can adjust as needed) -->
+            <input type="hidden" name="_captcha" value="false" />
+            <input type="hidden" name="_subject" value="New message from Avadafy site" />
+            <input type="hidden" name="_template" value="table" />
+
+            <!-- Netlify Forms: if you deploy on Netlify, also add:
+                 data-netlify="true" name="avadafy-contact"
+                 and remove the 'action' attribute above. -->
+
+            <div class="form-field">
+              <label for="name">Name*</label>
+              <input id="name" name="name" type="text" required />
+              <span class="error" data-for="name"></span>
+            </div>
+
+            <div class="form-field">
+              <label for="email">Email*</label>
+              <input id="email" name="email" type="email" required />
+              <span class="error" data-for="email"></span>
+            </div>
+
+            <div class="form-field">
+              <label for="topic">What are you working on?</label>
+              <select id="topic" name="topic">
+                <option value="">Select an option</option>
+                <option value="portfolio">Personal portfolio</option>
+                <option value="game-hub">Game / project hub</option>
+                <option value="studio-site">Studio or agency site</option>
+                <option value="other">Something else</option>
+              </select>
+              <span class="error" data-for="topic"></span>
+            </div>
+
+            <div class="form-field">
+              <label for="message">Message*</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="5"
+                placeholder="Tell us what you imagine, and we’ll help map it to pages, sections, and interactions."
+                required
+              ></textarea>
+              <span class="error" data-for="message"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              Send message
+            </button>
+            <p id="formStatus" class="form-status" role="status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>© <span id="year"></span> Avadafy · Crafted with HTML, CSS & JavaScript.</span>
+    <span class="footer-note">
+      Router · Theming · Forms · Animations — all ready for you to remix.
+    </span>
+  </footer>
+</body>
+</html>
