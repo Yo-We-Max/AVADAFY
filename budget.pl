@@ -38,6 +38,22 @@ foreach $pair (split(/&/, $raw_input)) {
 $action = $PARAMS{'action'} || 'dashboard';
 $user   = $PARAMS{'user'}   || 'default';
 
+# Sanitize user to prevent path traversal and XSS
+$user =~ s/[^a-zA-Z0-9_-]//g;
+$user = 'default' unless $user;
+
+# ---------- HTML Encoding Helper ----------
+
+sub html_escape {
+    ($str) = @_;
+    $str =~ s/&/&amp;/g;
+    $str =~ s/</&lt;/g;
+    $str =~ s/>/&gt;/g;
+    $str =~ s/"/&quot;/g;
+    $str =~ s/'/&#39;/g;
+    return $str;
+}
+
 # ---------- Data Persistence Helpers ----------
 
 sub save_budget_data {
@@ -190,9 +206,10 @@ sub load_list_data {
 
 sub format_currency {
     ($amount) = @_;
-    $amount = sprintf("%.2f", $amount);
+    $is_negative = ($amount < 0) ? 1 : 0;
+    $amount = sprintf("%.2f", abs($amount));
     $amount =~ s/\B(?=(\d{3})+(?!\d))/,/g if $amount =~ /^\d{4}/;
-    return "\$$amount";
+    return $is_negative ? "-\$$amount" : "\$$amount";
 }
 
 sub calc_percentage {
@@ -1135,7 +1152,8 @@ sub print_nav_link {
     );
 
     $icon = $icons{$link_action} || '&#x25CF;';
-    print "<a class=\"nav-link$active_class\" href=\"?action=$link_action&user=$user\">";
+    $safe_user = html_escape($user);
+    print "<a class=\"nav-link$active_class\" href=\"?action=$link_action&user=$safe_user\">";
     print "<span class=\"icon\">$icon</span> $label</a>\n";
 }
 
@@ -1250,7 +1268,7 @@ sub render_dashboard {
         print '<div class="card">';
         print '<div class="card-header"><h2>Savings Goals Progress</h2></div>';
         foreach $g (@stored_goals) {
-            $g_name   = $g->[0];
+            $g_name   = html_escape($g->[0]);
             $g_target = $g->[1] || 1;
             $g_saved  = $g->[2] || 0;
             $g_pct    = calc_percentage($g_saved, $g_target);
@@ -1284,9 +1302,9 @@ sub render_dashboard {
         print '<tr><th>Debt</th><th>Balance</th><th>APR</th><th>Monthly Payment</th></tr>';
         foreach $d (@stored_debts) {
             print '<tr>';
-            print "<td>$d->[0]</td>";
+            print "<td>" . html_escape($d->[0]) . "</td>";
             print '<td class="amount negative">' . format_currency($d->[1]) . '</td>';
-            print "<td>$d->[2]%</td>";
+            print "<td>" . html_escape($d->[2]) . "%</td>";
             print '<td>' . format_currency($d->[3]) . '</td>';
             print '</tr>';
         }
@@ -1308,9 +1326,10 @@ sub render_income_page {
     print 'Total: ' . format_currency($total_income_stored);
     print '</span></div>';
 
-    print "<form method=\"POST\" action=\"?action=save_income&user=$user\">";
+    $safe_user = html_escape($user);
+    print "<form method=\"POST\" action=\"?action=save_income&user=$safe_user\">";
     print '<input type="hidden" name="action" value="save_income">';
-    print "<input type=\"hidden\" name=\"user\" value=\"$user\">";
+    print "<input type=\"hidden\" name=\"user\" value=\"$safe_user\">";
     print '<div class="form-grid">';
 
     foreach $cat (@INCOME_CATEGORIES) {
@@ -1363,9 +1382,10 @@ sub render_expenses_page {
     print 'Total: ' . format_currency($total_expenses_stored);
     print '</span></div>';
 
-    print "<form method=\"POST\" action=\"?action=save_expenses&user=$user\">";
+    $safe_user = html_escape($user);
+    print "<form method=\"POST\" action=\"?action=save_expenses&user=$safe_user\">";
     print '<input type="hidden" name="action" value="save_expenses">';
-    print "<input type=\"hidden\" name=\"user\" value=\"$user\">";
+    print "<input type=\"hidden\" name=\"user\" value=\"$safe_user\">";
     print '<div class="form-grid">';
 
     foreach $cat (@EXPENSE_CATEGORIES) {
@@ -1516,9 +1536,10 @@ sub render_goals_page {
     # Add new goal form
     print '<div class="card">';
     print '<div class="card-header"><h2>Add New Goal</h2></div>';
-    print "<form method=\"POST\" action=\"?action=save_goal&user=$user\">";
+    $safe_user = html_escape($user);
+    print "<form method=\"POST\" action=\"?action=save_goal&user=$safe_user\">";
     print '<input type="hidden" name="action" value="save_goal">';
-    print "<input type=\"hidden\" name=\"user\" value=\"$user\">";
+    print "<input type=\"hidden\" name=\"user\" value=\"$safe_user\">";
     print '<div class="form-grid">';
     print '<div class="form-group"><label>Goal Name</label>';
     print '<input type="text" name="goal_name" placeholder="e.g., Emergency Fund, Vacation, New Car" required></div>';
@@ -1540,7 +1561,7 @@ sub render_goals_page {
 
         foreach $idx (0 .. $#stored_goals) {
             $g = $stored_goals[$idx];
-            $g_name   = $g->[0] || 'Unnamed';
+            $g_name   = html_escape($g->[0] || 'Unnamed');
             $g_target = $g->[1] || 1;
             $g_saved  = $g->[2] || 0;
             $g_date   = $g->[3] || 'No deadline';
@@ -1558,7 +1579,8 @@ sub render_goals_page {
             print " <span style=\"color:var(--text-muted);font-size:0.8rem;\">Due: $g_date</span></div>";
             print "<div style=\"display:flex;gap:8px;align-items:center;\">";
             print "<span style=\"font-size:0.85rem;color:var(--text-muted);\">$status_text</span>";
-            print "<a href=\"?action=delete_goal&idx=$idx&user=$user\" class=\"btn btn-danger btn-sm\" onclick=\"return confirm('Delete this goal?');\">Remove</a>";
+            $safe_user = html_escape($user);
+            print "<a href=\"?action=delete_goal&idx=$idx&user=$safe_user\" class=\"btn btn-danger btn-sm\" onclick=\"return confirm('Delete this goal?');\">Remove</a>";
             print '</div></div>';
             print '<div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px;">';
             print '<span>' . format_currency($g_saved) . ' saved</span>';
@@ -1585,9 +1607,10 @@ sub render_debts_page {
     # Add new debt form
     print '<div class="card">';
     print '<div class="card-header"><h2>Add Debt Entry</h2></div>';
-    print "<form method=\"POST\" action=\"?action=save_debt&user=$user\">";
+    $safe_user = html_escape($user);
+    print "<form method=\"POST\" action=\"?action=save_debt&user=$safe_user\">";
     print '<input type="hidden" name="action" value="save_debt">';
-    print "<input type=\"hidden\" name=\"user\" value=\"$user\">";
+    print "<input type=\"hidden\" name=\"user\" value=\"$safe_user\">";
     print '<div class="form-grid">';
     print '<div class="form-group"><label>Debt Name</label>';
     print '<input type="text" name="debt_name" placeholder="e.g., Credit Card, Student Loan" required></div>';
@@ -1634,13 +1657,14 @@ sub render_debts_page {
             }
 
             print '<tr>';
-            print "<td><strong>$d->[0]</strong></td>";
+            print "<td><strong>" . html_escape($d->[0]) . "</strong></td>";
             print '<td class="amount negative">' . format_currency($d->[1]) . '</td>';
             print "<td>$d->[2]%</td>";
             print '<td>' . format_currency($d->[3]) . '</td>';
             print "<td>$payoff_str</td>";
             print "<td>$interest_str</td>";
-            print "<td><a href=\"?action=delete_debt&idx=$idx&user=$user\" class=\"btn btn-danger btn-sm\" onclick=\"return confirm('Delete this debt?');\">Remove</a></td>";
+            $safe_user = html_escape($user);
+            print "<td><a href=\"?action=delete_debt&idx=$idx&user=$safe_user\" class=\"btn btn-danger btn-sm\" onclick=\"return confirm('Delete this debt?');\">Remove</a></td>";
             print '</tr>';
         }
 
