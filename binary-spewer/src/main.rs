@@ -14,6 +14,8 @@ use rand::Rng;
 struct Column {
     /// Current row position of the leading character.
     head: f64,
+    /// Previous integer head row (for multi-row erasure).
+    prev_head_row: i32,
     /// Rows to advance per tick.
     speed: f64,
     /// Length of the bright trail behind the head.
@@ -22,8 +24,10 @@ struct Column {
 
 impl Column {
     fn new(rows: u16, rng: &mut impl Rng) -> Self {
+        let head = rng.gen_range(-(rows as f64)..0.0);
         Self {
-            head: rng.gen_range(-(rows as f64)..0.0),
+            head,
+            prev_head_row: head as i32,
             speed: rng.gen_range(0.3..1.5),
             trail_len: rng.gen_range(4..16),
         }
@@ -31,6 +35,7 @@ impl Column {
 
     fn reset(&mut self, rows: u16, rng: &mut impl Rng) {
         self.head = rng.gen_range(-(rows as f64 * 0.5)..0.0);
+        self.prev_head_row = self.head as i32;
         self.speed = rng.gen_range(0.3..1.5);
         self.trail_len = rng.gen_range(4..16);
     }
@@ -130,17 +135,17 @@ fn run(stdout: &mut io::Stdout) -> io::Result<()> {
                 }
             }
 
-            // Erase the character just past the trail
-            let erase_row = head_row - col.trail_len as i32 - 1;
-            if erase_row >= 0 && erase_row < rows as i32 {
-                execute!(
-                    stdout,
-                    cursor::MoveTo(x as u16, erase_row as u16),
-                    Print(' ')
-                )?;
+            // Erase all rows past the trail that may have been skipped
+            let new_erase = head_row - col.trail_len as i32 - 1;
+            let old_erase = col.prev_head_row - col.trail_len as i32 - 1;
+            let erase_start = old_erase.max(0);
+            let erase_end = new_erase.min(rows as i32 - 1);
+            for er in erase_start..=erase_end {
+                execute!(stdout, cursor::MoveTo(x as u16, er as u16), Print(' '))?;
             }
 
             // Advance the column
+            col.prev_head_row = head_row;
             col.head += col.speed;
 
             // Reset when fully off-screen
