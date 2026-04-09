@@ -5,6 +5,119 @@
 #  Written in classic Perl — no strict, no warnings, no my declarations
 # ============================================================================
 
+# ---------- Detect Run Mode ----------
+# If not running under a CGI server, start a built-in HTTP server
+# so the app works with just: perl budget.pl
+
+if (!$ENV{'GATEWAY_INTERFACE'} && !$ENV{'SERVER_SOFTWARE'}) {
+    require IO::Socket::INET;
+
+    $PORT = $ENV{'PORT'} || 8080;
+
+    $httpd = IO::Socket::INET->new(
+        LocalAddr => '0.0.0.0',
+        LocalPort => $PORT,
+        Proto     => 'tcp',
+        Listen    => 10,
+        ReuseAddr => 1,
+    );
+
+    if (!$httpd) {
+        die "Cannot start server on port $PORT: $!\n";
+    }
+
+    print "=============================================\n";
+    print "  Avadafy Budget Platform\n";
+    print "  Running at: http://localhost:$PORT\n";
+    print "  Press Ctrl+C to stop\n";
+    print "=============================================\n\n";
+
+    $SIG{'CHLD'} = 'IGNORE';
+
+    while ($conn = $httpd->accept()) {
+        $child_pid = fork();
+
+        if (!defined $child_pid) {
+            close($conn);
+            next;
+        }
+
+        if ($child_pid == 0) {
+            # Child handles this request
+            close($httpd);
+
+            # Read the HTTP request line
+            $req_line = <$conn>;
+            $req_line =~ s/\r?\n$//;
+            ($http_method, $http_uri, $http_ver) = split(/\s+/, $req_line, 3);
+            $http_method ||= 'GET';
+            $http_uri    ||= '/';
+
+            # Read headers
+            $content_len = 0;
+            while ($hdr = <$conn>) {
+                $hdr =~ s/\r?\n$//;
+                last if $hdr eq '';
+                if ($hdr =~ /^Content-Length:\s*(\d+)/i) {
+                    $content_len = $1;
+                }
+            }
+
+            # Split URI into path and query string
+            ($req_path, $req_qs) = split(/\?/, $http_uri, 2);
+            $req_qs ||= '';
+
+            # Respond 404 for favicon
+            if ($req_path eq '/favicon.ico') {
+                print $conn "HTTP/1.0 404 Not Found\r\nContent-Length: 0\r\n\r\n";
+                close($conn);
+                exit(0);
+            }
+
+            # Read POST body
+            $post_data = '';
+            if ($http_method eq 'POST' && $content_len > 0) {
+                read($conn, $post_data, $content_len);
+            }
+
+            # Set CGI environment
+            $ENV{'REQUEST_METHOD'} = $http_method;
+            $ENV{'QUERY_STRING'}   = $req_qs;
+            $ENV{'CONTENT_LENGTH'} = $content_len;
+            $ENV{'GATEWAY_INTERFACE'} = 'CGI/1.1';
+
+            # Redirect STDOUT to the client socket
+            open(STDOUT, ">&" . fileno($conn));
+
+            # HTTP status line before CGI headers
+            print "HTTP/1.0 200 OK\r\n";
+
+            # For POST requests, make body available on STDIN
+            if ($http_method eq 'POST' && $content_len > 0) {
+                $tmp_post = "/tmp/_budget_post_$$";
+                open(POST_TMP, ">$tmp_post");
+                print POST_TMP $post_data;
+                close(POST_TMP);
+                open(STDIN, "<$tmp_post");
+                unlink($tmp_post);
+            }
+
+            # Log request to terminal
+            print STDERR "$http_method $http_uri\n";
+
+            # Fall through to CGI handler
+            goto CGI_HANDLER;
+        }
+
+        # Parent closes client socket and loops
+        close($conn);
+    }
+
+    exit(0);
+}
+
+CGI_HANDLER:
+
 # ---------- CGI / Environment Setup ----------
 
 $DATA_DIR   = "budget_data";
