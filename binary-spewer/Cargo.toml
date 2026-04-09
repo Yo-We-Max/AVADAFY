@@ -1,0 +1,9 @@
+[package]
+name = "binary-spewer"
+version = "0.1.0"
+edition = "2021"
+description = "A terminal binary text spewer that displays rolling 0s and 1s indefinitely"
+
+[dependencies]
+crossterm = "0.28"
+rand = "0.8"
